@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!--HEAD-START-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EzClass</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Instrument+Sans:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<script>
+  // Apply a saved theme before the page paints, so there's no flash.
+  try { const t = localStorage.getItem("ezclass.theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<link rel="stylesheet" href="css/style.css">
+<!--HEAD-END-->
+</head>
+<body>
+<!--BODY-START-->
+<a class="skip" href="#planner">Skip to the planner</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top" aria-label="EzClass, back to top">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="1" y="1" width="30" height="30" rx="8" class="logo-bg"/>
+        <rect x="7" y="8" width="8" height="7" rx="2" class="logo-cell"/>
+        <rect x="17" y="12" width="8" height="10" rx="2" class="logo-cell"/>
+        <rect x="7" y="18" width="8" height="6" rx="2" class="logo-cell"/>
+      </svg>
+      <span class="wordmark">EzClass</span>
+    </a>
+    <nav class="topnav" aria-label="Page">
+      <a href="#how">How it works</a>
+      <a href="#planner">Planner</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <button type="button" class="search-btn" data-action="palette" aria-label="Search classes, professors, and actions">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4.5 4.5"/></svg>
+      <span class="search-label">Search classes, professors, or actions</span>
+      <span class="search-keys"><kbd class="mod-key">Ctrl</kbd><kbd>K</kbd></span>
+    </button>
+    <div class="top-actions">
+      <span class="data-status" id="data-status" hidden></span>
+      <button type="button" class="icon-btn" id="theme-btn" aria-label="Switch to dark theme">
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a class="btn btn-red btn-sm" href="#planner">Open planner</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="hero-track" id="hero-track">
+    <div class="hero-stage">
+      <div class="hero-copy">
+        <p class="tab-count" id="tab-count" aria-hidden="true"><span class="tc-dot"></span><span id="tab-count-text">6 tabs open</span></p>
+        <h1 class="hero-h" id="hero-title">
+          <span class="hh hh-before">Six tabs open. Still not sure it fits.</span>
+          <span class="hh hh-after">One tab. Your whole week, sorted.</span>
+        </h1>
+        <p class="hero-sub">Look up SDSU sections, check who's teaching, and watch your week fill in as you pick. If two classes overlap, they turn red before you've committed to anything.</p>
+        <div class="hero-cta">
+          <a class="btn btn-red btn-lg" href="#planner">Start planning</a>
+          <a class="btn btn-ghost btn-lg" href="#how">How it works</a>
+        </div>
+        <p class="hero-meta">Fall 2026, Spring 2027, and Summer 2027 are open for planning. No account needed.</p>
+      </div>
+      <div class="hero-art" id="hero-art"></div>
+      <p class="scroll-hint" aria-hidden="true"><span class="scroll-line"></span>Scroll to clear the clutter</p>
+      <a class="skip-intro" href="#planner">Skip intro</a>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how" aria-labelledby="how-title">
+  <div class="how-inner">
+    <h2 id="how-title">Everything you used six tabs for</h2>
+    <p class="how-sub">Most people plan a semester in one sitting here. These four tools do the heavy lifting.</p>
+    <div class="how-grid">
+      <div class="how-item">
+        <svg class="how-icon" data-draw viewBox="0 0 64 64" aria-hidden="true">
+          <path pathLength="1" d="M10 14h44l-16 20v14l-12 6V34z"/>
+          <path pathLength="1" d="M18 22h28"/>
+        </svg>
+        <h3>Search across subjects</h3>
+        <p>Put CS and MATH in the same list, keep only the days you can be on campus, and hide lower-division courses with one switch.</p>
+      </div>
+      <div class="how-item">
+        <svg class="how-icon" data-draw viewBox="0 0 64 64" aria-hidden="true">
+          <rect pathLength="1" x="8" y="12" width="48" height="42" rx="6"/>
+          <path pathLength="1" d="M8 24h48M24 24v30M40 24v30M14 8v8M50 8v8"/>
+          <path pathLength="1" class="accent" d="M27 30h10v10H27z"/>
+        </svg>
+        <h3>Preview before you add</h3>
+        <p>Hover over a section and a dashed outline shows where it would land on your week. Red means it hits something you already have.</p>
+      </div>
+      <div class="how-item">
+        <svg class="how-icon" data-draw viewBox="0 0 64 64" aria-hidden="true">
+          <path pathLength="1" d="M12 46l14-14 8 8 18-20"/>
+          <path pathLength="1" d="M42 20h10v10"/>
+          <path pathLength="1" d="M10 56h44"/>
+        </svg>
+        <h3>Let Auto-build sort it out</h3>
+        <p>Give it the courses you need. It tries every combination of sections and ranks the ones that fit by days on campus, gaps, or start time.</p>
+      </div>
+      <div class="how-item">
+        <svg class="how-icon" data-draw viewBox="0 0 64 64" aria-hidden="true">
+          <circle pathLength="1" cx="32" cy="34" r="22"/>
+          <path pathLength="1" d="M32 22v12l8 6"/>
+          <path pathLength="1" class="accent-line" d="M24 6h16"/>
+        </svg>
+        <h3>Plan around work</h3>
+        <p>Drag across the calendar to block off a shift, practice, or your commute. Classes that run into it get flagged, and Auto-build stays out of those hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="planner" id="planner" data-view="find" aria-labelledby="planner-title">
+  <div class="planner-head">
+    <div class="planner-title-row">
+      <h2 id="planner-title">Plan your Fall 2026 schedule</h2>
+      <div class="term-switch" id="term-switch" role="radiogroup" aria-label="Term"></div>
+    </div>
+    <p class="planner-hint">Plans save in this browser, and each term keeps its own.<span class="key-tip"> Press <kbd class="mod-key">Ctrl</kbd> <kbd>K</kbd> to search anything or <kbd>?</kbd> to see shortcuts.</span></p>
+    <p class="term-note" id="term-note" hidden></p>
+  </div>
+
+
+  <div class="planner-grid">
+    <!-- Filters -->
+    <aside class="filters" id="filters" aria-labelledby="filters-title">
+      <div class="panel-head">
+        <h3 id="filters-title">Filters</h3>
+        <button type="button" class="link-btn" id="reset-btn" data-action="reset" hidden>Reset all</button>
+      </div>
+
+      <label class="field" for="f-keyword">
+        <span class="field-label">Course or title</span>
+        <input type="search" id="f-keyword" placeholder="CS 450 or calculus" autocomplete="off">
+      </label>
+      <label class="field" for="f-professor">
+        <span class="field-label">Professor</span>
+        <input type="search" id="f-professor" placeholder="A last name is enough" autocomplete="off">
+      </label>
+
+      <fieldset class="field">
+        <legend class="field-label">Subjects</legend>
+        <p class="hint">Pick as many as you want, or none to see everything.</p>
+        <div class="chips" id="subject-chips"></div>
+      </fieldset>
+
+      <fieldset class="field">
+        <legend class="field-label">Days I can be on campus</legend>
+        <div class="days" id="day-toggles"></div>
+        <p class="hint">Only shows classes that meet on these days and no others.</p>
+      </fieldset>
+
+      <label class="toggle" for="f-upper">
+        <input type="checkbox" id="f-upper">
+        <span>Upper division only <span class="hint-inline">300 to 599</span></span>
+      </label>
+
+      <button type="button" class="btn btn-ink filters-done" id="filters-done">Show results</button>
+    </aside>
+    <div class="filters-backdrop" id="filters-backdrop"></div>
+
+    <!-- Browse and auto-build -->
+    <section class="finder" id="finder" aria-label="Find classes">
+      <div class="finder-tabs" role="tablist" aria-label="How to find classes">
+        <button type="button" role="tab" id="ftab-browse" data-ftab="browse" aria-selected="true" aria-controls="browse-panel">Browse sections</button>
+        <button type="button" role="tab" id="ftab-build" data-ftab="build" aria-selected="false" aria-controls="build-panel" tabindex="-1">Auto-build</button>
+      </div>
+
+      <div id="browse-panel" role="tabpanel" aria-labelledby="ftab-browse">
+        <div class="toolbar">
+          <button type="button" class="btn btn-quiet filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="filters">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M6 10h8M8.5 15h3"/></svg>
+            Filters <span class="count" id="filters-count"></span>
+          </button>
+          <span class="result-count" id="result-count" aria-live="polite"></span>
+          <label class="sort" for="sort"><span>Sort</span>
+            <select id="sort">
+              <option value="course">Course number</option>
+              <option value="start">Earliest start</option>
+              <option value="units">Most units</option>
+            </select>
+          </label>
+        </div>
+        <div class="results" id="results">
+          <div class="empty"><p class="empty-title">Loading sections</p></div>
+        </div>
+      </div>
+
+      <div id="build-panel" role="tabpanel" aria-labelledby="ftab-build" hidden>
+        <div class="build">
+          <p class="build-intro">Add the courses you need. EzClass tries every way their sections can fit together and only shows you schedules with zero overlaps.</p>
+
+          <div class="field b-search">
+            <label class="field-label" for="b-input">Add a course</label>
+            <input type="search" id="b-input" placeholder="Type a course, like MATH 254" autocomplete="off"
+              role="combobox" aria-expanded="false" aria-controls="b-suggest" aria-autocomplete="list">
+            <ul class="b-suggest" id="b-suggest" role="listbox" hidden></ul>
+          </div>
+          <ul class="b-courses" id="b-courses"></ul>
+
+          <div class="b-prefs">
+            <label class="field" for="b-earliest"><span class="field-label">No classes before</span>
+              <select id="b-earliest">
+                <option value="">Any time</option><option value="480">8am</option><option value="540">9am</option>
+                <option value="600">10am</option><option value="660">11am</option><option value="720">Noon</option>
+              </select>
+            </label>
+            <label class="field" for="b-latest"><span class="field-label">No classes after</span>
+              <select id="b-latest">
+                <option value="">Any time</option><option value="900">3pm</option><option value="1020">5pm</option>
+                <option value="1080">6pm</option><option value="1200">8pm</option>
+              </select>
+            </label>
+            <fieldset class="field b-off">
+              <legend class="field-label">Days off</legend>
+              <div class="days" id="b-days"></div>
+            </fieldset>
+            <fieldset class="field b-rank">
+              <legend class="field-label">Rank schedules by</legend>
+              <div class="seg">
+                <label><input type="radio" name="b-sort" value="days" checked><span>Fewest days</span></label>
+                <label><input type="radio" name="b-sort" value="gaps"><span>Shortest gaps</span></label>
+                <label><input type="radio" name="b-sort" value="late"><span>Latest start</span></label>
+              </div>
+            </fieldset>
+            <label class="toggle" for="b-keep"><input type="checkbox" id="b-keep"><span>Keep the classes already in my plan</span></label>
+          </div>
+
+          <button type="button" class="btn btn-red" id="b-run" disabled>Find schedules</button>
+          <div class="b-results" id="b-results" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The week -->
+    <section class="week" id="week" aria-label="My week">
+      <div class="plan-tabs" id="plan-tabs" role="tablist" aria-label="Plans"></div>
+
+      <div class="preview-banner" id="preview-banner" hidden>
+        <p id="preview-label"></p>
+        <div class="preview-btns">
+          <button type="button" class="btn btn-quiet" id="preview-prev" aria-label="Previous option">Previous</button>
+          <button type="button" class="btn btn-quiet" id="preview-next" aria-label="Next option">Next</button>
+          <button type="button" class="btn btn-red btn-sm" id="preview-apply">Use this schedule</button>
+          <button type="button" class="link-btn" id="preview-cancel">Back to my plan</button>
+        </div>
+      </div>
+
+      <div class="guide" id="guide" hidden></div>
+      <div class="calendar" id="calendar"></div>
+      <p class="drag-hint" id="drag-hint">Work or practice at set times? Drag across the grid to block them off.</p>
+      <dl class="stats" id="stats" hidden></dl>
+      <p class="walk-note" id="walk-note" hidden></p>
+      <ul class="picks" id="picks"></ul>
+      <div class="busy-list" id="busy-list" hidden></div>
+
+      <div class="week-actions">
+        <button type="button" class="btn btn-red" id="check-btn" disabled>Check for conflicts</button>
+        <button type="button" class="btn btn-quiet" id="export-btn" disabled>Add to calendar</button>
+        <button type="button" class="btn btn-quiet" id="share-btn" disabled>Copy share link</button>
+        <button type="button" class="btn btn-quiet" id="busy-btn">Block out time</button>
+        <button type="button" class="btn btn-quiet" id="compare-btn" hidden>Compare plans</button>
+        <button type="button" class="link-btn" id="clear-btn" hidden>Clear plan</button>
+        <button type="button" class="link-btn" id="delete-plan-btn" hidden>Delete plan</button>
+      </div>
+      <input class="share-fallback" id="share-fallback" type="text" readonly hidden aria-label="Share link">
+      <div class="check-result" id="check-result" role="status" hidden></div>
+
+      <div class="popover" id="popover" role="dialog" aria-label="Class details" hidden></div>
+    </section>
+  </div>
+</section>
+
+<nav class="bottom-nav" aria-label="Planner">
+  <button type="button" data-mview="find" data-nav="find">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/></svg>Find
+  </button>
+  <button type="button" data-action="nav-build" data-nav="build">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17l5-5 3 3 6-7"/><path d="M15 8h4v4"/></svg>Auto-build
+  </button>
+  <button type="button" data-mview="week" data-nav="week">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 5v15M15 5v15"/></svg>My week <span class="count week-count"></span>
+  </button>
+  <button type="button" data-action="palette">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg>Search
+  </button>
+</nav>
+
+<section class="faq" id="faq" aria-labelledby="faq-title">
+  <div class="faq-inner">
+    <h2 id="faq-title">Questions people ask</h2>
+    <div class="faq-list">
+      <details>
+        <summary>Is this the official SDSU class schedule?</summary>
+        <p>No. EzClass reads a copy of the schedule data our team loaded into the database. Seats and times can change, so check every section in the official SDSU class schedule before you register.</p>
+      </details>
+      <details>
+        <summary>Do I need an account?</summary>
+        <p>No. Your plans save in this browser. If you clear your browser data they go with it, so copy a share link if you want a backup.</p>
+      </details>
+      <details>
+        <summary>How do I send my schedule to a friend or advisor?</summary>
+        <p>Press "Copy share link". The link holds your term and your sections, so whoever opens it sees the same week you do. Nothing gets uploaded.</p>
+      </details>
+      <details>
+        <summary>What's a tight walk?</summary>
+        <p>Two classes on the same day, in different buildings, with 15 minutes or less between them. You can make it. You just won't be stopping for coffee.</p>
+      </details>
+      <details>
+        <summary>Where do the professor ratings come from?</summary>
+        <p>We don't store any. Clicking a professor's name opens a RateMyProfessors search for them in a new tab.</p>
+      </details>
+      <details>
+        <summary>Can I plan more than one version of my week?</summary>
+        <p>Yes. Each term has room for Plan A, B, and C. "Compare plans" puts them side by side so you can see which one has fewer days on campus or shorter gaps.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <p>EzClass is a CS 514 Database Theory project at San Diego State University, built by Mehar, Malaika, Michelle, Sharif, Noor, and Matthew.</p>
+    <p class="muted">Not affiliated with SDSU registration. Always confirm sections in the official class schedule before you sign up.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<dialog class="palette" id="palette" aria-label="Search and jump">
+  <div class="pal-box">
+    <div class="pal-search">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4.5 4.5"/></svg>
+      <input type="text" id="pal-input" placeholder="Search a course, professor, or action" autocomplete="off" spellcheck="false"
+        role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list">
+      <kbd>Esc</kbd>
+    </div>
+    <ul class="pal-list" id="pal-list" role="listbox" aria-label="Results"></ul>
+    <p class="pal-foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span>Try "cs 310", "kim", or "plan"</span></p>
+  </div>
+</dialog>
+
+<dialog class="dialog dialog-wide" id="compare-dialog" aria-labelledby="compare-title">
+  <div class="dialog-body">
+    <h3 id="compare-title">Compare your plans</h3>
+    <div id="compare-grid"></div>
+    <div class="dialog-actions"><button type="button" class="btn btn-quiet" id="compare-close">Close</button></div>
+  </div>
+</dialog>
+
+<dialog class="dialog" id="keys-dialog" aria-labelledby="keys-title">
+  <div class="dialog-body">
+    <h3 id="keys-title">Keyboard shortcuts</h3>
+    <dl class="keys">
+      <div><dt><kbd class="mod-key">Ctrl</kbd><kbd>K</kbd></dt><dd>Search classes, professors, and actions</dd></div>
+      <div><dt><kbd>/</kbd></dt><dd>Search the course list</dd></div>
+      <div><dt><kbd>B</kbd></dt><dd>Browse sections</dd></div>
+      <div><dt><kbd>A</kbd></dt><dd>Auto-build a schedule</dd></div>
+      <div><dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></dt><dd>Open Plan A, B, or C</dd></div>
+      <div><dt><kbd>T</kbd></dt><dd>Next term</dd></div>
+      <div><dt><kbd>?</kbd></dt><dd>Show this list</dd></div>
+      <div><dt><kbd>Esc</kbd></dt><dd>Close a panel or leave a preview</dd></div>
+    </dl>
+    <div class="dialog-actions"><button type="button" class="btn btn-quiet" id="keys-close">Close</button></div>
+  </div>
+</dialog>
+
+<dialog class="dialog" id="export-dialog" aria-labelledby="export-title">
+  <form method="dialog" class="dialog-body" onsubmit="return false">
+    <h3 id="export-title">Put your classes on your calendar</h3>
+    <p>Every class becomes a weekly event that repeats until the last day of classes. Find both dates on the SDSU academic calendar.</p>
+    <div class="dialog-dates">
+      <label class="field" for="term-start"><span class="field-label">First day of classes</span><input type="date" id="term-start"></label>
+      <label class="field" for="term-end"><span class="field-label">Last day of classes</span><input type="date" id="term-end"></label>
+    </div>
+    <p class="hint bad-text" id="ics-error" hidden>The last day has to come after the first day.</p>
+    <p class="hint" id="ics-preview-note" hidden>Downloads are turned off in this preview. Copy the file text instead, or use the real app to save it.</p>
+    <textarea class="ics-text" id="ics-text" readonly hidden aria-label="Calendar file text"></textarea>
+    <div class="dialog-actions">
+      <button type="button" class="btn btn-quiet" id="export-close">Cancel</button>
+      <button type="button" class="btn btn-quiet" id="ics-copy" disabled>Copy file text</button>
+      <button type="button" class="btn btn-red" id="ics-download" disabled>Download .ics file</button>
+    </div>
+  </form>
+</dialog>
+<!--BODY-END-->
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

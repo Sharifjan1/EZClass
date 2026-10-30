@@ -1,141 +1,96 @@
-# SDSU Class Scheduler — CS514 Final Project
+# EzClass frontend (Phase 2)
 
-Phase 1 of the project: a fully working scheduler running on synthetic
-placeholder data. Real SDSU data gets swapped in later without changing
-any code, just the CSV files it imports from.
+Plain HTML, CSS, and JavaScript. No framework and no npm install. It talks to the Flask routes from the Phase 1 doc: `/api/health`, `/api/subjects`, `/api/sections`, and `/api/schedule/check`.
 
-## What's actually working right now
+## What's in it
 
-- A real database (SQLite for local dev, same SQL style as MySQL) with
-  Courses, Sections, Professors, Rooms, Students, and Enrollments
-- 52 placeholder sections across 5 subjects (CS, MATH, PHYS, ENGL, HIST),
-  including 4 sections that deliberately overlap in time so conflict
-  detection has something real to catch
-- A Flask backend with working routes: search/filter sections, get one
-  section, list subjects, and check a set of sections for conflicts
-- A basic frontend: search by subject/day/professor/keyword, add
-  sections to "My Schedule", and check for conflicts with one click
-- Conflict-detection logic that correctly parses day patterns (MW, TTh,
-  MWF, TR, etc.) and catches time overlaps
+The page opens with a scroll scene. Six pieces of registration clutter float on screen: an expired portal page, a professor rating, a sticky note asking "do these overlap??", a group chat, an old schedule screenshot, and a registration countdown. As you scroll, each one gets pulled into the middle and disappears while a "6 tabs open" counter ticks down to one. Then a week grid draws itself, classes drop in, one overlap turns red and moves to a free slot, and a check mark draws at the end. Below that is a short "how it works" band whose icons draw as you scroll to them, the planner, and a short FAQ.
 
-## How to run it
+Getting around:
 
-```bash
-# from the project root
-pip install -r requirements.txt --break-system-packages   # if needed
+- Search everything with Ctrl+K (Cmd+K on a Mac) or the search box in the top bar: courses, sections, professors, terms, plans, and actions like "check for conflicts". Picking a course jumps to it in the list; picking a section adds it to your plan.
+- Keyboard shortcuts: `/` search the list, `A` auto-build, `B` browse, `1` `2` `3` plans, `T` next term, `?` shows them all.
+- On phones, a bottom bar switches between Find, Auto-build, My week, and Search.
+- Returning visitors with a saved plan skip the intro and land on the planner. Everyone else can hit "Skip intro".
+- An empty plan shows a three-step guide with buttons for Browse and Auto-build.
+- The top bar highlights which part of the page you're on.
 
-# (re)build the database from schema + placeholder CSVs
-python3 backend/models/db.py
+The planner has:
 
-# start the server
-python3 backend/app.py
+- Busy times. Drag on an empty part of the week grid (or use "Block out time") to block out work, practice, a commute, or anything else. Busy times are saved per term and shared by all your plans. Classes that land on one get flagged in the list and on the grid, the conflict check reports them, and Auto-build never schedules over them.
+- Compare plans: a side-by-side table of Plan A, B, and C with a week thumbnail, units, days on campus, first and last class, gaps, and overlaps.
+- A term switcher for Fall 2026, Spring 2027, and Summer 2027. Each term has its own sections and its own saved plans, so switching never mixes them. Share links include the term. Add or change terms in the `TERMS` list in `js/store.js`.
+- Search by course, title, or professor, updating as you type. Press `/` to jump to search.
+- A subject filter that takes several subjects at once, a "days I can be on campus" filter, and an upper-division filter (300 to 599).
+- Sections grouped by course, with a small M T W Th F strip on each row so you can read the meeting pattern at a glance.
+- Live preview: point at a section and a dashed copy shows up on your week. It turns red if it would overlap something.
+- A note on each row that clashes with your plan, or that you already have another section of that course.
+- Auto-build: list the courses you need, set "no classes before/after", pick days off, and rank by fewest days on campus, shortest gaps, or latest start. It tries every combination and shows the ones with no overlaps, each with a tiny week thumbnail. Click one to preview it, then "Use this schedule".
+- Up to three plans (Plan A, B, C) saved in the browser.
+- Week stats: units, hours in class, days on campus, first class, longest gap, and tight walks. A tight walk is two classes on the same day in different buildings with 15 minutes or less between them. The first one gets a note under the stats, and Compare plans counts them too.
+- Click any class on the grid for details and a Remove button.
+- Check for conflicts (asks the server), Undo after removing or clearing, and a share link that loads the same classes for whoever opens it.
+- "Add to calendar" makes an .ics file with every class as a weekly repeating event.
+- Light and dark themes, a layout that works on phones, keyboard support, and reduced-motion support.
+
+## Files
+
+```
+index.html               page layout
+css/style.css            all styles, light and dark
+js/app.js                page logic: filters, list, plans, week panel, auto-build UI
+js/api.js                every call to Flask, plus the step that cleans up the JSON
+js/time.js               day patterns, times, and the overlap rule (same as conflicts.py)
+js/calendar.js           the week grid
+js/builder.js            the auto-build search and ranking (no DOM, easy to test)
+js/stats.js              units, hours, gaps
+js/store.js              saved plans, theme, share links
+js/ics.js                calendar file export
+js/hero.js               the scroll scene and the drawing icons
+js/palette.js            the Ctrl+K search box
+js/sample-data.js        made-up sections for working without the server
+tools/build_preview.py   bundles everything into one HTML file for showing people
 ```
 
-Then open **http://localhost:5000** in a browser. That's it, one server,
-frontend and backend both served from it.
+If you split the work: one person takes `app.js`, `api.js`, and `builder.js`; the other takes `calendar.js`, `hero.js`, and `style.css`.
 
-## Project layout
+## Running it
+
+Without the backend, from this folder:
 
 ```
-sdsu-scheduler/
-├── backend/
-│   ├── app.py                  # Flask entry point, run this
-│   ├── routes/
-│   │   ├── sections.py         # search/filter/list section routes
-│   │   └── schedule.py         # conflict-check route
-│   ├── models/
-│   │   ├── db.py                # DB connection + CSV loader
-│   │   └── conflicts.py         # conflict-detection logic (has its own tests, see below)
-│   └── sql/
-│       └── schema.sql           # CREATE TABLE statements (portable to MySQL)
-├── frontend/
-│   ├── index.html
-│   ├── css/style.css
-│   └── js/app.js                 # all frontend logic, fetch() calls to the backend
-├── data/
-│   ├── placeholder/              # generate_placeholder_data.py + its output CSVs
-│   ├── raw/                      # put real SDSU downloads here (untouched)
-│   └── cleaned/                  # put reshaped real data here (matches placeholder CSV columns)
-├── docs/                         # ER diagram, notes go here
-└── requirements.txt
+python3 -m http.server 8000
 ```
 
-## Regenerating placeholder data
+Open http://localhost:8000/?sample. Opening `index.html` by double-clicking won't work, because browsers block JavaScript modules on `file://` pages.
 
-```bash
-cd data/placeholder
-python3 generate_placeholder_data.py
+With Flask, copy this folder into the project as `frontend/` and point Flask at it in `backend/app.py`:
+
+```python
+app = Flask(__name__, static_folder="../frontend", static_url_path="")
+
+@app.route("/")
+def index():
+    return app.send_static_file("index.html")
 ```
 
-This overwrites the CSVs with a fresh (but reproducible, seeded) batch.
-Edit the constants at the top of the script (subjects, names, counts) if
-you want a different mix.
+Run the server and open http://localhost:5000. If `/api/health` doesn't answer, the page switches to sample data and shows a "Sample data" tag in the top bar.
 
-## GE Scheduler
+To make the one-file demo: `python3 tools/build_preview.py`, then open `dist/ezclass-preview.html`.
 
-The site has a home page, a Search view, and a GE Scheduler view, with a cart on
-the right that stays put across views. The GE Scheduler filters classes by GE
-area (1A, 1B, 1C, 2, 3A, 3B, 4, 5A to 5C, 6, and the upper-division Explorations)
-and by the cultural diversity, Ethnic Studies and American Institutions tags.
+## Trying it on GitHub Pages
 
-- GE data lives in `data/ge/`. `ge_courses.csv` was built from the SDSU catalog's
-  General Education page with `python3 data/ge/parse_ge_guide.py <saved page.txt>`.
-- `python3 backend/models/db.py data/cleaned` loads your classes AND the GE tables.
-- A class only shows up under a GE area if its subject and course number are in
-  `ge_courses.csv`, so there is nothing extra to fill in when adding classes.
+`python3 tools/build_preview.py --pages` writes `dist/index.html`, one file with everything inside. It checks `/api/health` first, so under Flask it uses the real database, and on GitHub Pages (no API there) it switches to sample data by itself.
 
-## Adding real data (the easy way)
+1. In your fork, on your branch, create `docs/index.html` and paste that file's contents in.
+2. Go to Settings, then Pages. Under "Build and deployment", pick "Deploy from a branch", choose your branch and the `/docs` folder, and save.
+3. After a minute or two the site is live at `https://YOUR-USERNAME.github.io/EZClass/`.
 
-1. Open `data/template/EzClass_Data_Template.xlsx` and read the Instructions sheet.
-2. Fill in the **Sections** sheet, one row per section. No ids needed.
-3. Check it and build the CSVs: `python3 data/import_real_data.py data/template/EzClass_Data_Template.xlsx`
-   (it lists any row with a problem so you can fix it).
-4. Load it: `python3 backend/models/db.py data/cleaned`
-5. Start the app as usual. To go back to placeholder data, run `python3 backend/models/db.py`.
+## Things to check with Mehar
 
-## Moving to real data later (manual version)
-
-1. Download the SDSU public class schedule export (Excel) for the term.
-2. Reshape it into `data/cleaned/courses.csv`, `sections.csv`, etc., using
-   the exact same column names as the placeholder CSVs (open one to see
-   the format).
-3. Instructor names need separate lookup since the public export doesn't
-   include them, see the project doc for the plan on scoping this down
-   to a handful of departments.
-4. Run `python3 backend/models/db.py` again, but change
-   `load_csvs(PLACEHOLDER_DIR)` to `load_csvs(<path to data/cleaned>)`
-   in the `if __name__ == "__main__":` block at the bottom of `db.py`.
-
-## Moving from SQLite to real MySQL
-
-Only `backend/models/db.py` needs to change:
-- Swap `import sqlite3` for a MySQL driver (`mysql-connector-python` or
-  `PyMySQL`)
-- Replace `get_connection()` with a MySQL connection using your
-  Workbench credentials
-- `schema.sql` already has MySQL notes at the bottom (mainly:
-  `AUTOINCREMENT` → `AUTO_INCREMENT`)
-
-Everything else (routes, conflict logic, frontend) stays exactly the same,
-since they only ever talk to `get_connection()`, not to SQLite directly.
-
-## Testing conflict detection
-
-The 4 placeholder sections with `section_number` starting with `C`
-(C49-C52 in the generated data) are deliberately overlapping pairs.
-Selecting all 4 in the UI and clicking "Check for Conflicts" should
-report exactly 2 conflicts. This was verified while building this: see
-`backend/models/conflicts.py` for the logic itself if you want to extend
-it (e.g. handling back-to-back classes with no gap, or cross-listed
-sections).
-
-## What's NOT done yet (see the project doc for full scope/roles/obstacles)
-
-- Real SDSU data import
-- Student accounts / login / saved schedules
-- Deployment (Railway or similar)
-- Frontend styling polish (current CSS is functional, not final)
-
-## AI usage
-
-See AI_USAGE.md for where AI helped and what the team added.
+1. JSON field names. `normalizeSection()` in `js/api.js` accepts the usual names (`section_id`, `subject`, `catalog_num`, `first_name`, `last_name`, `days`, `start_time`, `end_time`, `building`, `room_number`, `units`). If a column comes up blank, add the real key to the matching `pick(...)` list. Nothing else needs to change.
+2. The conflict check sends `{"section_ids": [49, 50]}` and reads Mehar's reply shape, `{"conflicts": [{"section_a": {...}, "section_b": {...}}], "conflict_free": true}`.
+3. "TR" and "TTh" both appear in the data. The frontend reads R as Thursday. If `conflicts.py` doesn't, the server will miss TR vs TTh clashes.
+4. The API takes one subject and one day, so the page loads everything and filters in the browser. That's fine for a few hundred sections. With real SDSU data, the backend should accept lists like `?subject=CS&subject=MATH`.
+5. Terms. The page sends `?term=Spring%202027` to `/api/sections` and `/api/subjects`, and also keeps only rows whose `term` column matches, so it works whether or not the route filters by term yet. The `sections` table already has a `term` column, so the route only needs `WHERE term = ?`.
+6. Auto-build runs in the browser too. It stops at 500 schedules, which is plenty for 3 to 6 courses.
