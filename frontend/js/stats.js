@@ -1,5 +1,5 @@
 // Numbers about a week of classes: units, hours, days on campus, gaps, and
-// "tight walks" (back-to-back classes in different buildings).
+// "tight walks" (back-to-back classes in different buildings)..
 // Used by the stats strip under the calendar and to rank auto-built schedules.
 
 import { DAY_ORDER } from "./time.js";
