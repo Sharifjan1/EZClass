@@ -7,6 +7,7 @@ import { renderCalendar, subjectColorIndex } from "./calendar.js";
 import { weekStats, formatDuration } from "./stats.js";
 import { buildSchedules, courseKey, MAX_RESULTS } from "./builder.js";
 import { buildICS } from "./ics.js";
+import { buildPrintSheet, printSheet } from "./print.js";
 import * as store from "./store.js";
 import { initHero, initDrawOnScroll } from "./hero.js";
 import { initRouter, goHome, currentPage, onPageChange } from "./router.js";
@@ -291,6 +292,7 @@ function renderWeek() {
   $("#check-btn").disabled = (n < 2 && !(n === 1 && state.busy.length)) || previewing;
   $("#export-btn").disabled = !n || previewing;
   $("#share-btn").disabled = !n || previewing;
+  $("#print-btn").disabled = !schedule().length || previewing;
   $("#clear-btn").hidden = !schedule().length || previewing;
   $("#delete-plan-btn").hidden = ps.plans.length < 2 || previewing;
   $(".week-actions").hidden = previewing;
@@ -882,6 +884,43 @@ function shareLink() {
   copyText(url, `Copied a link to ${plan().name}. Anyone who opens it sees these classes.`, $("#share-fallback"));
 }
 
+/* ======================= Print / PDF ======================= */
+
+function printSheetHtml() {
+  const hash = store.shareHash(state.term, schedule());
+  return buildPrintSheet({
+    planName: plan().name,
+    termLabel: termLabel(),
+    sections: schedule(),
+    busy: state.busy,
+    colorOf: colorClass,
+    url: `${location.href.split("#")[0]}${hash}`,
+  });
+}
+
+const printFileName = () => `EzClass ${termLabel()} ${plan().name}`;
+
+// The Print button. In the print dialog, pick a printer or "Save as PDF".
+function printPlan() {
+  if (!schedule().length) { toast("Add a class first, then print your week."); return; }
+  if (state.build.previewIndex != null) exitPreview();
+  printSheet(printSheetHtml(), printFileName());
+}
+
+// Ctrl+P / Cmd+P from the browser menu also gets the clean sheet.
+function wirePrintShortcut() {
+  window.addEventListener("beforeprint", () => {
+    if (document.body.classList.contains("printing") || !schedule().length) return;
+    const sheet = $("#print-sheet");
+    sheet.innerHTML = printSheetHtml();
+    document.body.classList.add("printing");
+    window.addEventListener("afterprint", () => {
+      document.body.classList.remove("printing");
+      sheet.innerHTML = "";
+    }, { once: true });
+  });
+}
+
 async function loadSharedPlan() {
   const shared = store.fromHash();
   if (!shared) return;
@@ -1137,6 +1176,7 @@ function paletteItems(q) {
   if (schedule().length) {
     A("Add this plan to my calendar", () => { goToPlanner("week"); openExport(); }, "export ics google apple outlook");
     A("Copy a share link", shareLink, "send friend");
+    A("Print or save as PDF", printPlan, "print pdf paper download", { hint: "P" });
   }
   A("Show me an example schedule", runExample, "demo sample try");
   A("Block out a busy time", () => { goToPlanner("week"); setTimeout(addBusyFromButton, 80); }, "work job practice commute busy");
@@ -1313,6 +1353,7 @@ function wire() {
   $("#delete-plan-btn").addEventListener("click", deletePlan);
   $("#export-btn").addEventListener("click", openExport);
   $("#share-btn").addEventListener("click", shareLink);
+  $("#print-btn").addEventListener("click", printPlan);
   $("#preview-prev").addEventListener("click", () => previewOption(Math.max(0, state.build.previewIndex - 1)));
   $("#preview-next").addEventListener("click", () => previewOption(Math.min(state.build.result.schedules.length - 1, state.build.previewIndex + 1)));
   $("#preview-apply").addEventListener("click", applyPreview);
@@ -1372,6 +1413,7 @@ function wire() {
       if (e.key === "?") { e.preventDefault(); openKeys(); return; }
       if (e.key === "a") { setFinderTab("build"); goToPlanner("find"); return; }
       if (e.key === "b") { setFinderTab("browse"); goToPlanner("find"); return; }
+      if (e.key === "p") { printPlan(); return; }
       if (e.key === "t") {
         const i = store.TERMS.findIndex((x) => x.id === state.term);
         switchTerm(store.TERMS[(i + 1) % store.TERMS.length].id);
@@ -1428,6 +1470,7 @@ async function init() {
   initDock();
   syncThemeButton();
   wire();
+  wirePrintShortcut();
   renderFilters();
   renderWeek();
 
