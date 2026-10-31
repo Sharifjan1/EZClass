@@ -9,6 +9,8 @@ import { buildSchedules, courseKey, MAX_RESULTS } from "./builder.js";
 import { buildICS } from "./ics.js";
 import * as store from "./store.js";
 import { initHero, initDrawOnScroll } from "./hero.js";
+import { initRouter, goHome, currentPage, onPageChange } from "./router.js";
+import { POSTS } from "./content.js";
 import { createPalette, score } from "./palette.js";
 
 const WEEKDAYS = ["M", "T", "W", "Th", "F"];
@@ -1003,9 +1005,30 @@ function syncBottomNav() {
 
 const isPhone = () => window.matchMedia("(max-width: 899px)").matches;
 
+// The bottom bar. Phones always show it. Wider screens show it as a floating
+// dock once the intro has scrolled mostly out of view.
+function initDock() {
+  const hero = $("#top");
+  if (!hero) return;
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const past = currentPage() === "home" && hero.getBoundingClientRect().bottom < window.innerHeight * 0.55;
+    document.documentElement.classList.toggle("dock-on", past);
+  };
+  onPageChange(() => requestAnimationFrame(update));
+  const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  update();
+}
+
 // Scrolls to the planner. On phones it also picks which half to show.
 function goToPlanner(view) {
-  if (view && isPhone()) setMobileView(view);
+  // The phone layout uses this to pick a half; on wider screens it only
+  // decides which dock button is highlighted.
+  if (view) setMobileView(view);
+  goHome();
   const target = view === "week" && !isPhone() ? $("#week") : $("#planner");
   target.scrollIntoView({ block: "start" });
 }
@@ -1121,11 +1144,19 @@ function paletteItems(q) {
   if (activeFilterCount()) A("Clear all filters", () => { resetFilters(); goToPlanner("find"); }, "reset");
   A(`Switch to ${effectiveTheme() === "dark" ? "light" : "dark"} theme`, toggleTheme, "mode night");
   A("Keyboard shortcuts", openKeys, "help keys", { hint: "?" });
-  A("How it works", () => $("#how").scrollIntoView(), "help about");
-  A("Back to the top", () => $("#top").scrollIntoView(), "intro hero");
+  const go = (hash) => () => { location.hash = hash; };
+  A("Features", go("#how"), "help how it works product");
+  A("About us", go("#/about"), "company story mission acronym");
+  A("Meet the team", go("#/team"), "people who built");
+  A("Blog", go("#/blog"), "news posts updates");
+  A("Deliverables", go("#/deliverables"), "roadmap phases milestones");
+  A("Privacy", go("#/privacy"), "data policy");
+  A("Terms of use", go("#/terms"), "legal");
+  if (q) for (const p of POSTS) A(`Read: ${p.title}`, go(`#/blog/${p.slug}`), `blog post ${p.tag}`);
+  A("Back to the top", () => { location.hash = "#/"; window.scrollTo({ top: 0 }); }, "home hero");
 
   const groupOrder = q ? ["Courses", "Sections", "Go to and do"] : ["Go to and do"];
-  const caps = { Courses: 5, Sections: 6, "Go to and do": q ? 6 : 12 };
+  const caps = { Courses: 5, Sections: 6, "Go to and do": q ? 6 : 20 };
   return groupOrder.flatMap((g) => out.filter((i) => i.group === g).sort((a, b) => (q ? b.sc - a.sc : 0)).slice(0, caps[g]));
 }
 
@@ -1137,19 +1168,35 @@ function openKeys() {
   $("#keys-dialog").showModal();
 }
 
+// On the home page, "Product" lights up near the top and "Planner" while the
+// planner is on screen.
 function initScrollSpy() {
-  const links = new Map($$(".topnav a").map((a) => [a.getAttribute("href").slice(1), a]));
+  const links = $$(".topnav [data-spy]");
   if (!("IntersectionObserver" in window)) return;
   const io = new IntersectionObserver((entries) => {
+    if (currentPage() !== "home") return;
     for (const e of entries) {
       if (!e.isIntersecting) continue;
-      for (const [id, a] of links) {
-        if (id === e.target.id) a.setAttribute("aria-current", "true");
+      const spot = e.target.id === "planner" ? "planner" : "top";
+      for (const a of links) {
+        if (a.dataset.spy === spot) a.setAttribute("aria-current", "true");
         else a.removeAttribute("aria-current");
       }
     }
   }, { rootMargin: "-45% 0px -50% 0px" });
-  for (const id of ["top", "how", "planner"]) if ($(`#${id}`)) io.observe($(`#${id}`));
+  for (const id of ["top", "what", "how", "steps", "planner"]) if ($(`#${id}`)) io.observe($(`#${id}`));
+}
+
+// The slide-in menu on phones.
+function initMenu() {
+  const sheet = $("#menu-sheet");
+  if (!sheet) return;
+  $("#menu-btn").addEventListener("click", () => sheet.showModal());
+  $("#menu-close").addEventListener("click", () => sheet.close());
+  $("#menu-theme").addEventListener("click", () => $("#theme-btn").click());
+  sheet.addEventListener("click", (e) => {
+    if (e.target === sheet || e.target.closest("a")) sheet.close();
+  });
 }
 
 function setFinderTab(tab) {
@@ -1215,7 +1262,12 @@ function wire() {
     }
     if (t.dataset.plan) { switchPlan(Number(t.dataset.plan)); return; }
     if (t.dataset.ftab) { setFinderTab(t.dataset.ftab); return; }
-    if (t.dataset.mview) { setMobileView(t.dataset.mview); goToPlanner(t.dataset.mview); return; }
+    if (t.dataset.mview) {
+      if (t.dataset.mview === "find" && t.closest(".bottom-nav")) setFinderTab("browse");
+      setMobileView(t.dataset.mview);
+      goToPlanner(t.dataset.mview);
+      return;
+    }
 
     const id = t.dataset.id;
     switch (t.dataset.action) {
@@ -1368,9 +1420,12 @@ async function init() {
   palette = createPalette({ dialog: $("#palette"), input: $("#pal-input"), list: $("#pal-list"), getItems: paletteItems });
   for (const k of $$(".mod-key")) k.textContent = isMac ? "⌘" : "Ctrl";
   renderTerm();
+  initRouter();
+  initMenu();
   initHero();
   initScrollSpy();
   initDrawOnScroll();
+  initDock();
   syncThemeButton();
   wire();
   renderFilters();
@@ -1386,7 +1441,7 @@ async function init() {
       : "The server didn't answer at /api/health, so the page is using made-up sections.";
   }
 
-  const sharedLink = Boolean(location.hash);
+  const sharedLink = Boolean(store.fromHash());
   await loadTermData();
   await loadSharedPlan();
   renderFilters();
@@ -1395,14 +1450,16 @@ async function init() {
   renderBuild();
   syncBottomNav();
 
-  // Returning with a saved plan (or opening a share link): skip the intro.
-  if (sharedLink || schedule().length) {
+  // Opening a share link jumps straight to the planner. Returning visitors
+  // on the home page get a reminder that their plan is saved.
+  if (sharedLink) {
     const html = document.documentElement;
     const before = html.style.scrollBehavior;
     html.style.scrollBehavior = "auto";
     $("#planner").scrollIntoView({ block: "start" });
     html.style.scrollBehavior = before;
-    if (!sharedLink) toast(`Welcome back. ${plan().name} for ${termLabel()} is right where you left it.`);
+  } else if (schedule().length && currentPage() === "home") {
+    toast(`Welcome back. ${plan().name} for ${termLabel()} is saved in the planner.`);
   }
 }
 
