@@ -371,6 +371,7 @@
         <button type="button" class="btn btn-red" id="check-btn" disabled>Check for conflicts</button>
         <button type="button" class="btn btn-quiet" id="export-btn" disabled>Add to calendar</button>
         <button type="button" class="btn btn-quiet" id="share-btn" disabled>Copy share link</button>
+        <button type="button" class="btn btn-quiet" id="print-btn" disabled title="Print your week, or pick &quot;Save as PDF&quot; in the print dialog">Print / PDF</button>
         <button type="button" class="btn btn-quiet" id="busy-btn">Block out time</button>
         <button type="button" class="btn btn-quiet" id="compare-btn" hidden>Compare plans</button>
         <button type="button" class="link-btn" id="clear-btn" hidden>Clear plan</button>
@@ -758,6 +759,7 @@
       <div><dt><kbd>/</kbd></dt><dd>Search the course list</dd></div>
       <div><dt><kbd>B</kbd></dt><dd>Browse sections</dd></div>
       <div><dt><kbd>A</kbd></dt><dd>Auto-build a schedule</dd></div>
+      <div><dt><kbd>P</kbd></dt><dd>Print your week or save it as a PDF</dd></div>
       <div><dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></dt><dd>Open Plan A, B, or C</dd></div>
       <div><dt><kbd>T</kbd></dt><dd>Next term</dd></div>
       <div><dt><kbd>?</kbd></dt><dd>Show this list</dd></div>
@@ -785,6 +787,7 @@
     </div>
   </form>
 </dialog>
+<div class="print-sheet" id="print-sheet" aria-hidden="true"></div>
 <!--BODY-END-->
 <script type="module" src="js/app.js"></script>
 </body>

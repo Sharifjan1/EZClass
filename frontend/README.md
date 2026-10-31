@@ -40,6 +40,7 @@ The planner has:
 - Click any class on the grid for details and a Remove button.
 - Check for conflicts (asks the server), Undo after removing or clearing, and a share link that loads the same classes for whoever opens it.
 - "Add to calendar" makes an .ics file with every class as a weekly repeating event.
+- "Print / PDF" (or press `P`, or Ctrl+P) prints a clean one-page sheet of the plan: term and plan name, week stats, the week grid, a table of every class with room, professor, and units, plus any overlaps, tight walks, and busy times. Pick "Save as PDF" in the print dialog to get a file. The sheet is built in `js/print.js` and only shows when printing.
 - Light and dark themes, a layout that works on phones, keyboard support, and reduced-motion support.
 
 ## Files
@@ -55,6 +56,7 @@ js/builder.js            the auto-build search and ranking (no DOM, easy to test
 js/stats.js              units, hours, gaps
 js/store.js              saved plans, theme, share links
 js/ics.js                calendar file export
+js/print.js              the printable schedule sheet (Print / PDF)
 js/hero.js               the week animation in the hero, and icons that draw on scroll
 js/router.js             switches between the pages (#/about, #/blog, ...)
 js/content.js            the blog posts
