@@ -1,6 +1,6 @@
 // The command palette: press Ctrl+K (Cmd+K on a Mac) or click Search in the
 // top bar, type anything, and jump there. Courses, sections, professors,
-// terms, plans, and page actions all live in one list.
+// terms, plans, and page actions all live in one list...
 // app.js supplies the items; this file only handles the box and the keyboard.
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
