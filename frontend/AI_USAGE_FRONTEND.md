@@ -55,5 +55,5 @@ checked the live site by hand.
 ## Things still to confirm with the team
 
 - The Team page roles and the blog posts were written by Claude from what we
-  described. The team should check them before the site is shared.
-- The Privacy and Terms pages were not reviewed by a lawyer.
+  described and then it was revised by Sharif and Noor. The team should check them before the site is shared.
+- The Privacy and Terms pages were not reviewed by a lawyer. ALL of the team members will review these informations. 
